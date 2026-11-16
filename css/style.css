@@ -1,0 +1,474 @@
+/* =========================================================================
+   Focus pull
+   A dark, deep scene seen through a lens. Scrolling turns the focus ring.
+   Lens-barrel engraving (Jost) for the instruments, Newsreader for names.
+   ========================================================================= */
+
+:root {
+  --bg: #08090b;
+  --ink: #ecebe6;
+  --muted: #9b9a94;
+  --yellow: #f3c234; /* the metre scale on a lens barrel */
+  --red: #e5452f;    /* the focus index */
+
+  --engrave: 'Jost', system-ui, sans-serif;
+  --serif: 'Newsreader', Georgia, serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { background: var(--bg); }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--engrave);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--yellow); outline-offset: 3px; }
+
+.skip {
+  position: absolute;
+  left: 16px;
+  top: -60px;
+  z-index: 50;
+  padding: 10px 14px;
+  background: var(--ink);
+  color: var(--bg);
+  text-decoration: none;
+}
+.skip:focus { top: 12px; }
+
+/* ------------------------------------------------------------ HUD */
+
+.hud {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 32px;
+  pointer-events: none;
+}
+.hud > * { pointer-events: auto; margin: 0; }
+.hud--top { top: 0; }
+
+.hud__name,
+.hud__link,
+.hud__readout {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+.hud__link,
+.hud__pause {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  text-decoration: underline;
+  text-decoration-color: rgba(236, 235, 230, 0.35);
+  text-underline-offset: 6px;
+  transition: text-decoration-color 0.2s;
+}
+.hud__link:hover, .hud__pause:hover { text-decoration-color: var(--ink); }
+.hud__right { display: flex; align-items: center; gap: 22px; }
+.hud__pause {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font: 500 11px/1 var(--engrave);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.is-paused .grain, .is-paused .cue__ring { animation-play-state: paused; }
+.hud__readout { color: var(--yellow); font-variant-numeric: tabular-nums; }
+.hud__sep { margin: 0 0.8em; color: var(--muted); }
+
+/* ------------------------------------------------------------ the scene */
+
+.scroller { position: relative; }
+
+.stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 70% 60% at 30% 70%, rgba(120, 70, 30, 0.16), transparent 70%),
+    radial-gradient(ellipse 60% 55% at 75% 30%, rgba(40, 90, 110, 0.14), transparent 70%),
+    var(--bg);
+}
+
+.bokeh, .iris {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.iris { z-index: 20; }
+
+.planes { position: absolute; inset: 0; z-index: 1; } /* its own layer, so the planes stay under the iris and captions */
+
+.plane {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 50% 50%;
+  will-change: transform, filter, opacity;
+  visibility: hidden;
+}
+.plane--shot {
+  aspect-ratio: 16 / 10;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  background: #111;
+}
+.plane--shot img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+.plane--shot:hover img { transform: scale(1.02); }
+
+.plane--text { text-align: center; cursor: default; }
+.plane__title {
+  margin: 0;
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 128px;
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+}
+.plane__sub {
+  margin: 26px 0 0;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.plane__links { display: flex; justify-content: center; gap: 14px; margin-top: 30px; }
+
+/* The autofocus frame: four corners around whatever is in focus. */
+.af {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 12;
+  pointer-events: none;
+  opacity: 0;
+}
+.af i {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border: 0 solid rgba(236, 235, 230, 0.8);
+  transition: border-color 0.2s;
+}
+.af i:nth-child(1) { left: -14px; top: -14px; border-left-width: 2px; border-top-width: 2px; }
+.af i:nth-child(2) { right: -14px; top: -14px; border-right-width: 2px; border-top-width: 2px; }
+.af i:nth-child(3) { left: -14px; bottom: -14px; border-left-width: 2px; border-bottom-width: 2px; }
+.af i:nth-child(4) { right: -14px; bottom: -14px; border-right-width: 2px; border-bottom-width: 2px; }
+.af.is-locked i { border-color: var(--red); }
+
+/* ------------------------------------------------------------ captions */
+
+.captions { position: absolute; inset: 0; z-index: 14; pointer-events: none; }
+
+.caption {
+  position: absolute;
+  top: 50%;
+  width: min(30vw, 400px);
+  opacity: 0;
+  pointer-events: none;
+}
+.caption.is-live { pointer-events: auto; }
+/* A soft shadow behind the text, so it reads over whatever is blurred behind it. */
+.caption::before {
+  content: '';
+  position: absolute;
+  inset: -18% -22%;
+  z-index: -1;
+  background: radial-gradient(closest-side, rgba(8, 9, 11, 0.82), rgba(8, 9, 11, 0.55) 60%, transparent);
+}
+.caption--left { left: 6vw; }
+.caption--right { right: 9vw; }
+
+.caption__kicker {
+  margin: 0 0 16px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--yellow);
+}
+.caption__name {
+  margin: 0;
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(40px, 4.4vw, 68px);
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+}
+.caption__type {
+  margin: 12px 0 18px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.caption__text { margin: 0 0 10px; font-size: 16px; line-height: 1.6; color: #d5d3cc; }
+.caption__note { margin: 0 0 10px; font-size: 14px; color: var(--muted); }
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  gap: 10px;
+  margin-top: 12px;
+  padding: 12px 20px;
+  border: 1px solid rgba(236, 235, 230, 0.4);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.button:hover { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.button:active { transform: scale(0.97); }
+.button--solid { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.button--solid:hover { background: #fff; }
+
+/* ------------------------------------------------------------ lens scale */
+
+.scale {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 25;
+  width: 92px;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(transparent, #000 22%, #000 78%, transparent);
+  mask-image: linear-gradient(transparent, #000 22%, #000 78%, transparent);
+}
+.scale__index {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: 26px;
+  height: 2px;
+  margin-top: -1px;
+  background: var(--red);
+}
+.scale__index::before {
+  content: '';
+  position: absolute;
+  right: 30px;
+  top: -3px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--red);
+}
+.scale__marks {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  will-change: transform;
+}
+.scale__marks li { height: 72px; position: relative; }
+.scale__marks button {
+  position: absolute;
+  right: 0;
+  top: -12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 24px;
+  padding: 0 0 0 10px;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font: 500 12px/1 var(--engrave);
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.scale__marks button::after {
+  content: '';
+  width: 14px;
+  height: 1px;
+  background: currentColor;
+}
+.scale__marks button:hover,
+.scale__marks button.is-current { color: var(--yellow); }
+/* Small ticks between the numbers. */
+.scale__marks li::before,
+.scale__marks li::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  width: 6px;
+  height: 1px;
+  background: rgba(155, 154, 148, 0.5);
+}
+.scale__marks li::before { top: 24px; }
+.scale__marks li::after { top: 48px; }
+.scale__marks li:last-child::before,
+.scale__marks li:last-child::after { display: none; }
+
+/* ------------------------------------------------------------ extras */
+
+.grain {
+  position: absolute;
+  inset: -50%;
+  z-index: 22;
+  pointer-events: none;
+  opacity: 0.07;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain 0.9s steps(4) infinite;
+}
+@keyframes grain {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-3%, 2%); }
+  50% { transform: translate(2%, -3%); }
+  75% { transform: translate(-1%, -2%); }
+}
+/* Vignette, like the corners of a fast lens. */
+.stage::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 21;
+  pointer-events: none;
+  background: radial-gradient(ellipse 85% 80% at 50% 50%, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+}
+
+.cue {
+  position: absolute;
+  left: 50%;
+  bottom: 34px;
+  z-index: 26;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--muted);
+  transition: opacity 0.4s;
+}
+.cue__ring {
+  width: 22px;
+  height: 22px;
+  border: 1px dashed rgba(236, 235, 230, 0.6);
+  border-radius: 50%;
+  animation: ring 6s linear infinite;
+}
+@keyframes ring { to { transform: rotate(360deg); } }
+
+/* ------------------------------------------------------------ list of work */
+
+.work {
+  position: relative;
+  z-index: 2;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 120px 32px 80px;
+}
+.work h2 {
+  margin: 0 0 40px;
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(44px, 6vw, 80px);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.work h3 {
+  margin: 36px 0 8px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--yellow);
+}
+.work ul { list-style: none; margin: 0; padding: 0; }
+.work li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: baseline;
+  padding: 6px 0;
+  border-top: 1px solid rgba(236, 235, 230, 0.12);
+}
+.work a { display: inline-flex; align-items: center; min-height: 44px; font-family: var(--serif); font-size: 26px; text-decoration: none; }
+.work a:hover { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
+.work li span { color: var(--muted); font-size: 14px; text-align: right; }
+
+.foot { padding: 0 32px 40px; text-align: center; }
+.foot p { margin: 0; font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--muted); }
+
+/* ------------------------------------------------------------ phones */
+
+@media (max-width: 899px) {
+  .hud { padding: 8px 16px; }
+  .hud__right { gap: 16px; }
+  .hud__readout { display: none; }
+  .scale { display: none; }
+
+  .plane__title { font-size: 64px; }
+  .plane__sub { font-size: 11px; letter-spacing: 0.24em; margin-top: 18px; }
+
+  .caption,
+  .caption--left,
+  .caption--right {
+    left: 20px;
+    right: 20px;
+    top: auto;
+    bottom: 5vh;
+    width: auto;
+  }
+  .caption__kicker { margin-bottom: 10px; }
+  .caption__name { font-size: 38px; }
+  .caption__type { margin: 8px 0 10px; }
+  .caption__text { font-size: 15px; line-height: 1.5; }
+  .caption__note { display: none; }
+
+  .cue { bottom: 22px; }
+  .work { padding: 80px 20px 60px; }
+  .work a { font-size: 22px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grain, .cue__ring { animation: none; }
+  .hud__pause { display: none; }
+  .plane--shot img { transition: none; }
+}

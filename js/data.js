@@ -37,7 +37,7 @@ window.FOCUS = {
         },
         {
           id: 'georgina-marrison',
-          name: 'Georgina Marrison',
+          name: 'Virtual Painting Walkthrough',
           type: 'Painting portfolio',
           text: 'An example portfolio for a painter. Scroll to walk a watercolour path toward the mountain, until the scene dissolves into white paper and becomes the gallery.',
           note: 'Example site, still in progress.',
@@ -47,34 +47,12 @@ window.FOCUS = {
       ],
     },
     {
-      name: 'Games',
+      name: '3D showcases',
       fstop: 'f/2',
       projects: [
         {
-          id: 'moon-racer',
-          name: 'Moon Racer',
-          type: 'Driving game',
-          text: 'A 3D driving game on a floating circuit above the Moon. Race your best lap against your own ghost, with a keyboard or a PS5 controller.',
-          url: 'https://debruynbrycedbb.github.io/Moon-Racer/',
-          image: 'assets/frames/moon-racer.jpg',
-        },
-        {
-          id: 'starlink-launch-tycoon',
-          name: 'Starlink Launch Tycoon',
-          type: 'Tycoon game',
-          text: 'A tycoon game about launching satellites. Load the rocket, launch, deploy, land the booster and grow your orbital income. Fly it yourself or leave it to the autopilot.',
-          url: 'https://debruynbrycedbb.github.io/SpaceX-Tycoon/',
-          image: 'assets/frames/starlink-launch-tycoon.jpg',
-        },
-      ],
-    },
-    {
-      name: '3D showcases',
-      fstop: 'f/2.8',
-      projects: [
-        {
           id: 'jackob',
-          name: 'Jackob',
+          name: 'Apparel Store',
           type: '3D product showcase',
           text: 'A gallery room with a rack of three denim jackets and a sequin patchwork bag. Click a jacket to bring it forward and turn it, or pick up the bag.',
           url: 'https://debruynbrycedbb.github.io/Jackob-Blender-Site/',
@@ -93,7 +71,7 @@ window.FOCUS = {
     },
     {
       name: 'Apps & trackers',
-      fstop: 'f/4',
+      fstop: 'f/2.8',
       projects: [
         {
           id: 'weeknight',
@@ -111,6 +89,28 @@ window.FOCUS = {
           note: 'Members only. Visitors see the sign-in page.',
           url: 'https://debruynbrycedbb.github.io/Movies-and-Series-Site/',
           image: 'assets/frames/cinevault.jpg',
+        },
+      ],
+    },
+    {
+      name: 'Games',
+      fstop: 'f/4',
+      projects: [
+        {
+          id: 'moon-racer',
+          name: 'Moon Racer',
+          type: 'Driving game',
+          text: 'A 3D driving game on a floating circuit above the Moon. Race your best lap against your own ghost, with a keyboard or a PS5 controller.',
+          url: 'https://debruynbrycedbb.github.io/Moon-Racer/',
+          image: 'assets/frames/moon-racer.jpg',
+        },
+        {
+          id: 'starlink-launch-tycoon',
+          name: 'Starlink Launch Tycoon',
+          type: 'Tycoon game',
+          text: 'A tycoon game about launching satellites. Load the rocket, launch, deploy, land the booster and grow your orbital income. Fly it yourself or leave it to the autopilot.',
+          url: 'https://debruynbrycedbb.github.io/SpaceX-Tycoon/',
+          image: 'assets/frames/starlink-launch-tycoon.jpg',
         },
       ],
     },

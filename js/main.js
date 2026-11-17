@@ -165,6 +165,7 @@
   let dirty = true;
 
   function readScroll() {
+    if (!H) return; // not laid out yet (e.g. a hidden tab): keep the last target
     const top = scroller.getBoundingClientRect().top;
     const raw = clamp(-top / (SEG * H), 0, N - 1);
     const k = Math.min(Math.floor(raw), N - 2);
@@ -184,7 +185,8 @@
 
   function renderPlanes() {
     const k = BLUR();
-    let nearest = Math.round(s);
+    if (!Number.isFinite(s)) s = target;
+    let nearest = clamp(Math.round(s), 0, N - 1);
 
     stops.forEach((st, i) => {
       if (st.caption) {
@@ -371,7 +373,7 @@
 
   let last = performance.now();
   function frame(now) {
-    const dt = Math.min(now - last, 64);
+    const dt = clamp(now - last, 0, 64);
     last = now;
     readScroll();
     const before = s;

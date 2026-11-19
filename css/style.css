@@ -472,3 +472,84 @@ a { color: inherit; }
   .hud__pause { display: none; }
   .plane--shot img { transition: none; }
 }
+
+/* ------------------------------------------------------------ cookie bar */
+
+.consent {
+  position: fixed;
+  left: 32px;
+  bottom: 32px;
+  z-index: 40;
+  width: min(400px, calc(100% - 64px));
+  padding: 18px 22px 8px;
+  background: rgba(14, 15, 18, 0.94);
+  border: 1px solid rgba(236, 235, 230, 0.14);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  animation: consent-in 0.5s ease both;
+}
+@keyframes consent-in { from { opacity: 0; transform: translateY(12px); } }
+.consent__kicker {
+  margin: 0 0 8px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--yellow);
+}
+.consent__text {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 17px;
+  line-height: 1.4;
+}
+.consent__text a {
+  color: var(--muted);
+  text-underline-offset: 3px;
+  white-space: nowrap;
+}
+.consent__text a:hover { color: var(--ink); }
+.consent__actions {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 24px;
+  margin-top: 6px;
+}
+.consent button,
+.foot__consent {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: 500 11px/1.3 var(--engrave);
+  letter-spacing: 0.24em;
+  text-align: left;
+  text-transform: uppercase;
+  text-decoration: underline;
+  text-decoration-color: rgba(236, 235, 230, 0.35);
+  text-underline-offset: 6px;
+  cursor: pointer;
+  transition: text-decoration-color 0.2s, color 0.2s;
+}
+.consent button:hover,
+.foot__consent:hover { text-decoration-color: var(--ink); }
+.consent button:active,
+.foot__consent:active { color: var(--yellow); }
+.foot__consent { margin-top: 4px; color: var(--muted); }
+
+/* keep the scroll cue clear of the bar where they would overlap */
+@media (max-width: 1179px) {
+  .consent-open .cue { bottom: calc(var(--consent-h, 0px) + 48px); }
+}
+@media (max-width: 899px) {
+  .consent { left: 12px; right: 12px; bottom: 12px; width: auto; padding: 16px 18px 6px; }
+  .consent__text { font-size: 16px; }
+  .consent-open .cue { bottom: calc(var(--consent-h, 0px) + 28px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .consent { animation: none; }
+}

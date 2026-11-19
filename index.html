@@ -6,10 +6,35 @@
   <title>Bryce de Bruyn · Websites and games, in focus</title>
   <meta name="description" content="The websites and browser games Bryce de Bruyn has designed and built. Scroll to rack focus through them, from close up to infinity.">
   <meta name="theme-color" content="#08090b">
+
+  <!-- Google tag (GA4 G-KSHFJ2PBB5 via GTM-5NJ6FLJG), Consent Mode v2.
+       Starts with cookies off: Google only gets anonymous, cookieless pings.
+       "Accept" in the bar (js/consent.js) turns analytics cookies on. Ad storage stays off. -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('consent', 'default', {
+      analytics_storage: 'denied',
+      ad_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+      wait_for_update: 500
+    });
+    try {
+      if (localStorage.getItem('bdb-analytics') === 'granted') {
+        gtag('consent', 'update', { analytics_storage: 'granted' });
+      }
+    } catch (e) {}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-5NJ6FLJG"></script>
+  <script>
+    gtag('js', new Date());
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,300;1,6..72,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=6">
+  <link rel="stylesheet" href="css/style.css?v=7">
 </head>
 <body>
   <a class="skip" href="#work">Skip to the list of work</a>
@@ -50,9 +75,11 @@
 
   <footer class="foot">
     <p>Bryce de Bruyn · Barcelona</p>
+    <button class="foot__consent" type="button" data-consent-open>Cookie settings</button>
   </footer>
 
-  <script src="js/data.js?v=6"></script>
-  <script src="js/main.js?v=6"></script>
+  <script src="js/data.js?v=7"></script>
+  <script src="js/main.js?v=7"></script>
+  <script src="js/consent.js?v=7"></script>
 </body>
 </html>

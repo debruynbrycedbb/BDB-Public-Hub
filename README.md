@@ -9,6 +9,7 @@ Plain HTML, CSS and JavaScript, with no build step and no libraries. Hosted on G
 - `index.html`: the page.
 - `js/data.js`: **everything shown**: categories, projects, texts, links, images and the distance labels.
 - `js/main.js`: the scene (focus, blur, iris, bokeh, lens scale, captions).
+- `js/consent.js`: the cookie bar ("Accept" / "Accept only essential cookies"; "Cookie settings" in the footer reopens it).
 - `css/style.css`: the look. Fonts: Newsreader and Jost (Google Fonts).
 - `assets/frames/`: one 800×500 screenshot per project.
 
@@ -18,6 +19,10 @@ Plain HTML, CSS and JavaScript, with no build step and no libraries. Hosted on G
 2. Add the project to its category in `js/data.js`.
 3. Add one more distance to both `distances` and `metres` in `js/data.js` (there is one per stop: the title, each project, then ∞).
 4. Raise the `?v=` number on the CSS and JS links in `index.html`.
+
+## Analytics
+
+Google Analytics 4 (`G-KSHFJ2PBB5`) through the Google tag `GTM-5NJ6FLJG` in the `<head>` of `index.html`, with Google Consent Mode v2. Every visit sends an anonymous, cookieless page view. "Accept" also turns on Google Analytics cookies; "Accept only essential cookies" keeps them off (and removes any `_ga` cookies). Ad storage is always off. The choice is saved in the browser as `bdb-analytics`.
 
 ## Accessibility
 

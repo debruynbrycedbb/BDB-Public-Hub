@@ -55,8 +55,8 @@
     bar.setAttribute('aria-label', 'Cookies');
     bar.innerHTML =
       '<p class="consent__kicker">Cookies</p>' +
-      '<p class="consent__text">This site uses Google Analytics to count visits. Accept to allow its cookies, or keep only the essential ones. Nothing is used for ads. ' +
-      '<a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener">How Google uses this</a></p>' +
+      '<p class="consent__text">This site uses Google Analytics to count visits. Without your OK it only counts them anonymously, without cookies. Accept to allow its cookies, or keep only the essential ones. Nothing is used for ads. ' +
+      '<a href="privacy.html">Privacy &amp; cookies</a></p>' +
       '<div class="consent__actions">' +
       '<button type="button" data-choice="granted">Accept</button>' +
       '<button type="button" data-choice="denied">Accept only essential cookies</button>' +

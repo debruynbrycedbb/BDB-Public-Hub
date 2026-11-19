@@ -10,6 +10,7 @@ Plain HTML, CSS and JavaScript, with no build step and no libraries. Hosted on G
 - `js/data.js`: **everything shown**: categories, projects, texts, links, images and the distance labels.
 - `js/main.js`: the scene (focus, blur, iris, bokeh, lens scale, captions).
 - `js/consent.js`: the cookie bar ("Accept" / "Accept only essential cookies"; "Cookie settings" in the footer reopens it).
+- `privacy.html`: privacy & cookie statement, linked from the cookie bar and the footer ("Privacy & cookies"). It carries the same Google tag as `index.html`.
 - `css/style.css`: the look. Fonts: Newsreader and Jost (Google Fonts).
 - `assets/frames/`: one 800×500 screenshot per project.
 
